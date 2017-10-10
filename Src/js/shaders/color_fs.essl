@@ -1,0 +1,9 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+	varying vec3 color;
+	uniform vec4 solidColor;
+
+	void main(void) {
+		gl_FragColor = vec4(color,1);
+	}
+`;

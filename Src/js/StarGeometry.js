@@ -26,7 +26,21 @@ let StarGeometry = function(gl) {
   this.colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER,
-    new Float32Array(vertexArray),
+    new Float32Array([
+      252/255,235/255,0/255,
+      255/255,194/255,0/255,
+      252/255,235/255,0/255,
+      255/255,194/255,0/255,
+      252/255,235/255,0/255,
+      255/255,194/255,0/255,
+      252/255,235/255,0/255,
+      255/255,194/255,0/255,
+      252/255,235/255,0/255,
+      255/255,194/255,0/255,
+      252/255,235/255,0/255,
+      ]
+
+      ),
     gl.STATIC_DRAW);
 
   // index buffer

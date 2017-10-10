@@ -81,6 +81,10 @@ HeartGeometry.prototype.draw = function() {
     0, //< tightly packed
     0 //< data starts at array start
   );
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+  gl.disableVertexAttribArray(1);
+
   // set index buffer to pipeline input
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 

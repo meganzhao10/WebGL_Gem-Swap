@@ -2,9 +2,11 @@
 let Scene = function(gl) {
   this.vsIdle = new Shader(gl, gl.VERTEX_SHADER, "idle_vs.essl");
   this.fsSolid = new Shader(gl, gl.FRAGMENT_SHADER, "solid_fs.essl");
+  this.fsColor = new Shader(gl, gl.FRAGMENT_SHADER, "color_fs.essl");
   this.fsChange = new Shader(gl, gl.FRAGMENT_SHADER, "change_fs.essl");
 
   this.solidProgram = new Program(gl, this.vsIdle, this.fsSolid);
+  this.colorProgram = new Program(gl,this.vsIdle, this.fsColor);
   this.pulsateProgram = new Program(gl,this.vsIdle, this.fsChange);
 
   this.starGeometry = new StarGeometry(gl);
@@ -23,11 +25,13 @@ let Scene = function(gl) {
   this.purpleMaterial = new Material(gl, this.solidProgram);
   this.purpleMaterial.solidColor.set(47/255, 54/255, 132/255);
 
+  this.colorMaterial = new Material(gl,this.colorProgram);
+
   this.pulsateMaterial = new Material(gl, this.pulsateProgram);
   this.pulsateMaterial.time.set(this.startTime);
   this.pulsateMaterial.changeColor.set(252/255, 153/255, 151/255);
 
-  this.starMesh = new Mesh(this.starGeometry,this.greenMaterial);  
+  this.starMesh = new Mesh(this.starGeometry,this.colorMaterial);  
   this.star2Mesh = new Mesh(this.starGeometry,this.purpleMaterial);
   this.diamondMesh = new Mesh(this.diamondGeometry,this.blueMaterial);
   this.heartMesh = new Mesh(this.heartGeometry,this.orangeMaterial);

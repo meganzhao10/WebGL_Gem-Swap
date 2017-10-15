@@ -30,7 +30,6 @@ When chains are formed, gems disappear and gems above them fall in their places.
 
 ## Game Demo
 
-* Game page.
 ![Alt text](img-demo/img1.png?raw=true "Title")
 ![Alt text](img-demo/img2.png?raw=true "Title")
 

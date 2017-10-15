@@ -21,11 +21,11 @@ Mouse click a cell and release over a neighboring cell to form a horizontal or v
 When chains are formed, gems disappear and gems above them fall in their places. Random gems fall in to places in the upmost rows.
 
 ## Features
-* Bomb - when a cell is clicked with key 'B' held down, the gem in the cell disappears.
-* Quake - when key 'Q' is held down, the window shakes violently. During the quake, in every frame, all gems stand a 0.1% chance of disappearing. There are a limited numbers of frames this feature can be used.
-* Dramatic exit - when gems disappear, they quickly shrinke to zero size while rotating.
-* Turn the tables - when key 'A' or 'D' is held down, the window rotates in counterclockwise or clockwise direction, respectively.
-* Downshift - Gems always fall along the grid-aligned direction closest to the screen's downwards.
+* Bomb: when a cell is clicked with key 'B' held down, the gem in the cell disappears.
+* Quake: when key 'Q' is held down, the window shakes violently. During the quake, in every frame, all gems stand a 0.1% chance of disappearing. There are a limited numbers of frames this feature can be used.
+* Dramatic exit: when gems disappear, they quickly shrinke to zero size while rotating.
+* Turn the tables: when key 'A' or 'D' is held down, the window rotates in counterclockwise or clockwise direction, respectively.
+* Downshift: Gems always fall along the grid-aligned direction closest to the screen's downwards.
 
 
 ## Game Demo

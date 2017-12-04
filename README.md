@@ -26,6 +26,7 @@ When chains are formed, gems disappear and gems above them fall in their places.
 * Dramatic exit: when gems disappear, they quickly shrinke to zero size while rotating.
 * Turn the tables: when key 'A' or 'D' is held down, the window rotates in counterclockwise or clockwise direction, respectively.
 * Downshift: Gems always fall along the grid-aligned direction closest to the screen's downwards.
+* Stretch goal: Add a user-controlled avatar (e.g. spaceship, Mario, side-view car, top-view car). Display objects as semi-transparent quads with animated textures. Use physics (forces, torques, acceleration, velocity, drag, etc.) to simulate the motion of objects. Use collision detection and response to make them interact plausibly. Make the 2D camera follow the avatar. Display a minimap. Show the number of lives remaining, or pickups gathered. Shoot projectiles. Display explosions. Display animated characters. Use particle systems to render exhaust plasma/smoke/fire. Display objects with rotating parts (wheel, rotor, turret, etc.). Move enemies with simple AI (visit checkpoints, chase down avatar, etc.)
 
 
 ## Game Demo

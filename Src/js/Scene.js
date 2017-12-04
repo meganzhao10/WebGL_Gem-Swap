@@ -45,6 +45,12 @@ let Scene = function(gl) {
   this.idUp;
   this.numberOfFramesQuake = 0;
 
+  this.score = 0;
+  this.scoreElement = document.getElementById("score");
+  this.scoreNode = document.createTextNode(String(this.score));
+  this.scoreElement.appendChild(this.scoreNode); 
+  
+
   for (var i = 0; i < 14; i++) {
     this.gameObjects[i] = [];
     for (var j = 0; j < 14; j++) {
@@ -142,21 +148,21 @@ Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime
 
 
 Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
-    var xDown = Math.floor(mouse.Down.x + 2.5);
-    var yDown = Math.floor(mouse.Down.y + 2.5);
-    var xMove = mouse.Move.x;
-    var yMove = mouse.Move.y;   
-    var xUp = Math.floor(mouse.Up.x + 2.5);
-    var yUp = Math.floor(mouse.Up.y + 2.5);
+  var xDown = Math.floor(mouse.Down.x + 2.5);
+  var yDown = Math.floor(mouse.Down.y + 2.5);
+  var xMove = mouse.Move.x;
+  var yMove = mouse.Move.y;   
+  var xUp = Math.floor(mouse.Up.x + 2.5);
+  var yUp = Math.floor(mouse.Up.y + 2.5);
 
-    if (mouse.pressedDown){
-    this.idDown = this.gameObjects[xDown][yDown].typeID;
-    //Bomb
-    if(keysPressed.B){
-      this.gameObjects[xDown][yDown].move(5*dt);
-      this.gameObjects[xDown][yDown].shrink();
-      this.gameObjects[xDown][yDown].typeID = -1;
-      }
+  if (mouse.pressedDown){
+  this.idDown = this.gameObjects[xDown][yDown].typeID;
+  //Bomb
+  if(keysPressed.B){
+    this.gameObjects[xDown][yDown].move(5*dt);
+    this.gameObjects[xDown][yDown].shrink();
+    this.gameObjects[xDown][yDown].typeID = -1;
+    }
   }
 
   //Sticky
@@ -234,15 +240,23 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
     }
 
     mouse.pressedDown = false;
-    mouse.pressedUp = false;  
+    mouse.pressedUp = false; 
   }
+
+  //add more point if more than 3
+
 
   //Three-in-a-line
     for(var i=2; i<12; i++) {
       for(var j=2; j<12; j++) {
+
         //check vertically
-        if (this.gameObjects[i][j].typeID == this.gameObjects[i+1][j].typeID &&
+        if (this.gameObjects[i][j].typeID != -1 &&
+          this.gameObjects[i][j].typeID == this.gameObjects[i+1][j].typeID &&
           this.gameObjects[i+1][j].typeID == this.gameObjects[i+2][j].typeID){
+
+          this.score += 10;
+          this.scoreNode.nodeValue = String(this.score);
           var k = 2;
           while (i+k!=13 && this.gameObjects[i+k][j].typeID == this.gameObjects[i+k+1][j].typeID){
             k++;
@@ -252,10 +266,15 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
             this.gameObjects[i+m][j].shrink();
             this.gameObjects[i+m][j].move(50*dt);
           }
+
         }
         //check horizontally
-        if (this.gameObjects[i][j].typeID == this.gameObjects[i][j+1].typeID &&
+        if (this.gameObjects[i][j].typeID != -1 &&
+          this.gameObjects[i][j].typeID == this.gameObjects[i][j+1].typeID &&
           this.gameObjects[i][j+1].typeID == this.gameObjects[i][j+2].typeID){
+
+          this.score += 10;
+          this.scoreNode.nodeValue = String(this.score);
           var l = 2;
           while (j+l!=13 && this.gameObjects[i][j+l].typeID == this.gameObjects[i][j+l+1].typeID){
             l++;

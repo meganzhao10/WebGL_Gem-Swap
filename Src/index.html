@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>	
 <head>
-	<title>AIT Graphics 2017 fall</title>
+	<title>Gem Swap Game</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" type="text/css" href="css/style.css" />
@@ -27,8 +27,11 @@
 <body>
 	<div id="container">
 	  <canvas id="canvas"></canvas>
-	  <div id="overlay"></div>
+	  <div id="overlay">
+	  	<div>Score: <span id="score"></span></div>
+	  </div>
 	</div>
+
 	<script src="js/keycodes.js"></script>
 	<script src="js/Shader.js"></script>	
 		<script src="js/shaders/idle_vs.essl"></script>
@@ -45,5 +48,6 @@
 	<script src="js/Mesh.js"></script>
 	<script src="js/GameObject.js"></script>
 	<script src="js/OrthoCamera.js"></script>
+
 </body>
 </html>

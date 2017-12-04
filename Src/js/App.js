@@ -92,7 +92,6 @@ App.prototype.update = function() {
 	if (pendingResourceNames.length === 0) {
 		// animate and draw scene
 		this.scene.update(this.gl,this.keysPressed,this.mouse);
-		this.overlay.innerHTML = "Ready.";
 	} else {
 		this.overlay.innerHTML = "Loading: " + pendingResourceNames;
 	}
@@ -108,7 +107,6 @@ App.prototype.update = function() {
 window.addEventListener('load', function() {
 	let canvas = document.getElementById("canvas");
 	let overlay = document.getElementById("overlay");
-	overlay.innerHTML = "WebGL";
 
 	let app = new App(canvas, overlay);
 	app.registerEventHandlers();

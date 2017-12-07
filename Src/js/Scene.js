@@ -45,12 +45,6 @@ let Scene = function(gl) {
   this.idUp;
   this.numberOfFramesQuake = 0;
 
-  this.score = 0;
-  this.scoreElement = document.getElementById("score");
-  this.scoreNode = document.createTextNode(String(this.score));
-  this.scoreElement.appendChild(this.scoreNode); 
-  
-
   for (var i = 0; i < 14; i++) {
     this.gameObjects[i] = [];
     for (var j = 0; j < 14; j++) {
@@ -77,33 +71,28 @@ let Scene = function(gl) {
       	this.gameObjects[i].push(newGameObject);
     };
   };
-  progress();
+
+  this.score = 0;
+  this.scoreElement = document.getElementById("score");
+  this.scoreNode = document.createTextNode(String(this.score));
+  this.scoreElement.appendChild(this.scoreNode); 
+
+  this.secondsLeft = 100;
+  this.counter = 100;
+  this.timePrg = document.getElementById('progress');
+  this.percent = document.getElementById('percentCount');
+  this.secondsInterval = 0;
+
+  this.startSwap = false;
+
 };
-
-function progress(){
-  var prg = document.getElementById('progress');
-  var percent = document.getElementById('percentCount');
-  var counter = 100;
-  var progress = 100;
-  var id = setInterval(frame, 1000);
-
-  function frame(){
-    if (progress == 0 && counter == 0){
-      clearInterval(id);
-    } else{
-      progress -= 1;
-      counter -= 1;
-      prg.style.width = progress + '%';
-      percent.innerHTML = counter + ' sec';
-    }
-  }
-}
-
 
 Scene.prototype.update = function(gl, keysPressed, mouse) {  
   let elapseTime = (new Date().getTime() - this.beginningTime)/500;
   let timeAtThisFrame = new Date().getTime();
   let dt = (timeAtThisFrame - this.timeAtLastFrame) / 1000.0;
+  if (this.secondsInterval == 10) this.secondsInterval = -1;
+  this.secondsInterval++;
 
   this.timeAtLastFrame = timeAtThisFrame;
   this.pulsateMaterial.time.set(elapseTime);
@@ -112,6 +101,14 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   gl.clearColor(223/255, 208/255, 159/255, 1.0);
   gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  //timerBar
+  if (this.secondsInterval == 0 && this.secondsLeft > 0 && this.counter > 0){
+      this.secondsLeft -= 1;
+      this.counter -= 1;
+      this.timePrg.style.width = this.secondsLeft + '%';
+      this.percent.innerHTML = this.counter + ' %';
+  }
 
   for(var i=0; i<14; i++){
     for(var j=0; j<14; j++){
@@ -136,6 +133,7 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
 Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime) {
   //Quake
   if (keysPressed.Q){
+    this.startSwap = true;
     if (this.numberOfFramesQuake < 150){
       this.camera.position = new Vec2(4.5,4.5).
       add(Math.sin(elapseTime*30)*0.1,Math.sin(elapseTime*30)*0.1); 
@@ -155,11 +153,13 @@ Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime
   }
 
   if (keysPressed.A){
+    this.startSwap = true;
     this.camera.rotation -= 0.01;
     this.camera.updateViewProjMatrix(); 
   }
 
   if (keysPressed.D){
+    this.startSwap = true;
     this.camera.rotation += 0.01;
     this.camera.updateViewProjMatrix(); 
   }
@@ -257,16 +257,17 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
       this.gameObjects[xUp][yUp].typeID = this.gameObjects[xDown][yDown].typeID;
       this.gameObjects[xDown][yDown] = new GameObject(mesh);
       this.gameObjects[xDown][yDown].typeID = id;
+      this.startSwap = true;
     }
 
     mouse.pressedDown = false;
     mouse.pressedUp = false; 
   }
 
-  //add more point if more than 3
-
 
   //Three-in-a-line
+
+    var timerPlus = 20;
     for(var i=2; i<12; i++) {
       for(var j=2; j<12; j++) {
 
@@ -284,17 +285,23 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
             this.gameObjects[i+m][j].shrink();
             this.gameObjects[i+m][j].move(50*dt);
           }
-          this.score += 10 * Math.pow((k-1),2);
-          //score: 3 - 10points; 4 - 40points; 5 - 90points
-          this.scoreNode.nodeValue = String(this.score);
+
+          if (this.startSwap){
+              this.score += 10 * Math.pow((k-1),2);
+              //score: 3 - 10points; 4 - 40points; 5 - 90points
+              this.scoreNode.nodeValue = String(this.score);
+              if (k==2) timerPlus = 5;
+              if (k==3) timerPlus = 15;
+              if (this.secondsLeft + timerPlus <= 100){
+                this.secondsLeft += timerPlus;
+                this.counter += timerPlus;
+              }
+          }
         }
         //check horizontally
         if (this.gameObjects[i][j].typeID != -1 &&
           this.gameObjects[i][j].typeID == this.gameObjects[i][j+1].typeID &&
           this.gameObjects[i][j+1].typeID == this.gameObjects[i][j+2].typeID){
-
-          this.score += 10;
-          this.scoreNode.nodeValue = String(this.score);
 
           var l = 2;
           while (j+l!=13 && this.gameObjects[i][j+l].typeID == this.gameObjects[i][j+l+1].typeID){
@@ -306,8 +313,17 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
             this.gameObjects[i][j+n].move(50*dt);
               
           }
-          this.score += 10 * Math.pow((l-1),2);
-          this.scoreNode.nodeValue = String(this.score);
+          if (this.startSwap){
+            this.score += 10 * Math.pow((l-1),2);
+            this.scoreNode.nodeValue = String(this.score);
+            if (l==2) timerPlus = 5;
+            if (l==3) timerPlus = 15;
+            if (this.secondsLeft + timerPlus <= 100){
+              this.secondsLeft += timerPlus;
+              this.counter += timerPlus;
+            }
+          }
+          
         }
       }
     }

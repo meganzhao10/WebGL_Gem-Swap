@@ -38,9 +38,13 @@ car drive can explore them
 *HAZEL: fall with acceration; wait till disappear then fall 
 
 -天天爱消除，三次，第二次冰碎掉
+-Hint 
+-步数
 -有毒，惩罚
 -life bar; when form a line extend; 
 -plus points for 4/5 in a line;
+
+fixed bug of when gem is draged out of bound
 
 Levels:
 -shape of the grid changes;

@@ -275,8 +275,6 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
           this.gameObjects[i][j].typeID == this.gameObjects[i+1][j].typeID &&
           this.gameObjects[i+1][j].typeID == this.gameObjects[i+2][j].typeID){
 
-          this.score += 10;
-          this.scoreNode.nodeValue = String(this.score);
           var k = 2;
           while (i+k!=13 && this.gameObjects[i+k][j].typeID == this.gameObjects[i+k+1][j].typeID){
             k++;
@@ -286,7 +284,9 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
             this.gameObjects[i+m][j].shrink();
             this.gameObjects[i+m][j].move(50*dt);
           }
-
+          this.score += 10 * Math.pow((k-1),2);
+          //score: 3 - 10points; 4 - 40points; 5 - 90points
+          this.scoreNode.nodeValue = String(this.score);
         }
         //check horizontally
         if (this.gameObjects[i][j].typeID != -1 &&
@@ -295,6 +295,7 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
 
           this.score += 10;
           this.scoreNode.nodeValue = String(this.score);
+
           var l = 2;
           while (j+l!=13 && this.gameObjects[i][j+l].typeID == this.gameObjects[i][j+l+1].typeID){
             l++;
@@ -305,6 +306,8 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
             this.gameObjects[i][j+n].move(50*dt);
               
           }
+          this.score += 10 * Math.pow((l-1),2);
+          this.scoreNode.nodeValue = String(this.score);
         }
       }
     }

@@ -77,7 +77,27 @@ let Scene = function(gl) {
       	this.gameObjects[i].push(newGameObject);
     };
   };
+  progress();
 };
+
+function progress(){
+  var prg = document.getElementById('progress');
+  var percent = document.getElementById('percentCount');
+  var counter = 100;
+  var progress = 100;
+  var id = setInterval(frame, 1000);
+
+  function frame(){
+    if (progress == 0 && counter == 0){
+      clearInterval(id);
+    } else{
+      progress -= 1;
+      counter -= 1;
+      prg.style.width = progress + '%';
+      percent.innerHTML = counter + ' sec';
+    }
+  }
+}
 
 
 Scene.prototype.update = function(gl, keysPressed, mouse) {  
@@ -289,9 +309,6 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
       }
     }
 }
-
-
-
 
 Scene.prototype.downShift = function() {
   var rotateAngle = this.camera.rotation % 6.2;

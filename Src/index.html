@@ -27,11 +27,22 @@
 <body>
 	<div id="container">
 	  <canvas id="canvas"></canvas>
-	  <div id="overlay">
-	  	<div>Score: <span id="score"></span></div>
-	  </div>
-	</div>
 
+	  <div id="overlayProgress">
+		  	<div id="percentCount">100 sec</div>
+		  	<div class="progress-bar">
+		  			<div id="progress"></div>
+		  	</div>
+	  </div>
+
+	  <div id="overlay">
+		  	<div>Score: <span id="score"></span></div>
+	  </div>
+
+	  	
+	  
+	</div>
+  
 	<script src="js/keycodes.js"></script>
 	<script src="js/Shader.js"></script>	
 		<script src="js/shaders/idle_vs.essl"></script>

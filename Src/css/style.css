@@ -1,4 +1,4 @@
-* {
+*
 	margin: 0;
 	padding: 0;
 }
@@ -19,6 +19,37 @@
     left: 15px;
     top: 15px;
     z-index: 20;
+}
+
+#overlayProgress{
+	position: absolute;
+    width: 100%;
+    height: 2%;
+    top: 15px;
+    z-index: 20;
+    text-align: center;
+}
+
+#percentCount {
+	height: 35px;
+	font-size:23px;
+	color: #fff;
+}
+
+.progress-bar{
+	position: fixed;
+	left: 25%;
+	width: 50%;
+	height: 26px;
+	padding: 2px;
+	background-color: #bbb;
+	border-radius: 13px;
+}
+#progress{
+	width: 100%; /* Adjust with JavaScript */
+	height: 25px;
+	border-radius: 10px;
+	background-color: darkturquoise;
 }
 
 #canvas {

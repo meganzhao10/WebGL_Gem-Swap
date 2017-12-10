@@ -32,17 +32,20 @@ When chains are formed, gems disappear and gems above them fall in their places.
 
 * Potential Features: 
 minimap with light;
-plus points; timer; put bomb somewhere by drag and drop once certain points; change shapes; 3d; level; automatically rotate in half way instead of key control;
+put bomb somewhere by drag and drop once certain points; change shapes; 3d; level; automatically rotate in half way instead of key control;
 car drive can explore them
 
 *HAZEL: fall with acceration; wait till disappear then fall 
+
 
 -天天爱消除，三次，第二次冰碎掉
 -Hint 
 -步数
 -有毒，惩罚
--life bar; when form a line extend; 
--plus points for 4/5 in a line;
+-when swipe doesnt work minus point or  a life loss
+
+
+
 
 fixed bug of when gem is draged out of bound
 

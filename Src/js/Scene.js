@@ -10,6 +10,7 @@ let Scene = function(gl) {
   this.pulsateProgram = new Program(gl,this.vsIdle, this.fsChange);
 
   this.starGeometry = new StarGeometry(gl);
+  this.starGeometry2 = new StarGeometry2(gl);
   this.heartGeometry = new HeartGeometry(gl);
   this.diamondGeometry = new DiamondGeometry(gl);
 
@@ -32,9 +33,9 @@ let Scene = function(gl) {
   this.pulsateMaterial.changeColor.set(252/255, 153/255, 151/255);
 
   this.starMesh = new Mesh(this.starGeometry,this.colorMaterial);  
-  this.star2Mesh = new Mesh(this.starGeometry,this.purpleMaterial);
-  this.diamondMesh = new Mesh(this.diamondGeometry,this.blueMaterial);
-  this.heartMesh = new Mesh(this.heartGeometry,this.orangeMaterial);
+  this.starMesh2 = new Mesh(this.starGeometry2,this.colorMaterial);
+  this.diamondMesh = new Mesh(this.diamondGeometry,this.colorMaterial);
+  this.heartMesh = new Mesh(this.heartGeometry,this.colorMaterial);
   this.heartPulsateMesh = new Mesh(this.heartGeometry,this.pulsateMaterial);
 
   this.camera = new OrthoCamera();
@@ -59,11 +60,11 @@ let Scene = function(gl) {
       	} else if (random == 3){
       		randomMesh = this.heartPulsateMesh;
       	} else {
-          randomMesh = this.star2Mesh;
+          randomMesh = this.starMesh2;
         }
       	let newGameObject = new GameObject(randomMesh);
       	if (i<2 || i>11 || j<2 || j>11)	{
-      		newGameObject.scale = (0,0,0);
+      		newGameObject.scale.set(0,0,0);
       		newGameObject.typeID = -1;
       	} else {
       		newGameObject.typeID = random;
@@ -110,24 +111,53 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
       this.percent.innerHTML = this.counter + ' %';
   }
 
+
   for(var i=0; i<14; i++){
     for(var j=0; j<14; j++){
       if(this.gameObjects[i][j].mesh == this.diamondMesh)
-       	  this.gameObjects[i][j].move(dt);
+       	  this.gameObjects[i][j].diamondRotate(dt);
+      if(this.gameObjects[i][j].mesh == this.starMesh2)
+          this.gameObjects[i][j].move(dt);
       this.gameObjects[i][j].position = new Vec3(i-2, j-2, 0);
     };
   };
 
   this.keyPressedFeatures(dt, mouse, keysPressed, elapseTime);
   this.mouseSwap(dt, mouse, keysPressed);
+  this.checkThreeInALine(dt);
   this.downShift();
 
   //draw
 	for(var i=2; i<12; i++){
   	for(var j=2; j<12; j++){
+
+      if (this.gameObjects[i][j].scale.x == 0)
+        this.gameObjects[i][j].typeID = -1;
+    
+
+      var emptyBelow = false;
+      if (j==2) {
+        this.gameObjects[i][j].isFalling = false;
+      }else {
+        for (var n=j-1; n>1; n--){
+          if (this.gameObjects[i][n].typeID == -1) emptyBelow = true;
+        }
+      }
+
+      if (!emptyBelow) {
+        this.gameObjects[i][j].isFalling = false;
+      }else{
+        this.gameObjects[i][j].isFalling = true;
+      }
+
+      if (this.gameObjects[i][j].startShink == true) {
+          this.gameObjects[i][j].shrink();
+          this.gameObjects[i][j].move(50*dt);
+      }
   		this.gameObjects[i][j].draw(this.camera);
-  	};
-	};
+	 };
+  };
+
 }
 
 Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime) {
@@ -145,7 +175,6 @@ Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime
           if(Math.random()*1000 < 1){
           this.gameObjects[i][j].move(5*dt);
           this.gameObjects[i][j].shrink();
-          this.gameObjects[i][j].typeID = -1;
           } 
         };
       };
@@ -179,9 +208,7 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
   this.idDown = this.gameObjects[xDown][yDown].typeID;
   //Bomb
   if(keysPressed.B){
-    this.gameObjects[xDown][yDown].move(5*dt);
-    this.gameObjects[xDown][yDown].shrink();
-    this.gameObjects[xDown][yDown].typeID = -1;
+    this.gameObjects[xDown][yDown].scale.set(0,0,0);
     }
   }
 
@@ -264,70 +291,113 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
     mouse.pressedUp = false; 
   }
 
+}
 
-  //Three-in-a-line
-
+Scene.prototype.checkThreeInALine = function(dt){
+    //Three-in-a-line
     var timerPlus = 20;
-    for(var i=2; i<12; i++) {
-      for(var j=2; j<12; j++) {
+    for(var i=2; i<13; i++) {
+      for(var j=2; j<13; j++) {
 
-        //check vertically
+        //check horizontally
         if (this.gameObjects[i][j].typeID != -1 &&
-          this.gameObjects[i][j].typeID == this.gameObjects[i+1][j].typeID &&
-          this.gameObjects[i+1][j].typeID == this.gameObjects[i+2][j].typeID){
+          this.gameObjects[i][j].typeID == this.gameObjects[i-1][j].typeID &&
+          this.gameObjects[i-1][j].typeID == this.gameObjects[i+1][j].typeID && 
+            this.gameObjects[i][j].isFalling == false && this.gameObjects[i-1][j].isFalling == false &&
+          this.gameObjects[i+1][j].isFalling == false){
 
-          var k = 2;
-          while (i+k!=13 && this.gameObjects[i+k][j].typeID == this.gameObjects[i+k+1][j].typeID){
-            k++;
+          var l = -1;
+          while (i+l!=1 && this.gameObjects[i+l][j].typeID == this.gameObjects[i+l-1][j].typeID){
+            l--;
           }
-          for(var m = 0; m <= k; m++) {
-            this.gameObjects[i+m][j].typeID = -1;
-            this.gameObjects[i+m][j].shrink();
-            this.gameObjects[i+m][j].move(50*dt);
+          var r = 1;
+          while (i+r!=13 && this.gameObjects[i+r][j].typeID == this.gameObjects[i+r+1][j].typeID){
+            r++;
+          }
+          var finishShrink = false;
+          for(var m = l; m <= r; m++) {
+            if (!finishShrink){
+                this.gameObjects[i+m][j].startShink = true;
+                if (this.gameObjects[i+m][j].scale.x == 0){
+                    for(var h = l; h <= r; h++) {
+                      this.gameObjects[i+h][j].scale.set(0,0,0); 
+                      this.gameObjects[i+h][j].startShink = false;                   
+                    }
+                    finishShrink = true;
+                } 
+            }
           }
 
-          if (this.startSwap){
-              this.score += 10 * Math.pow((k-1),2);
-              //score: 3 - 10points; 4 - 40points; 5 - 90points
+          if (this.startSwap && finishShrink){
+              if (r-l == 2) {
+                this.score += 10;
+              } else if (r-l == 3){
+                this.score += 30;
+              } else {
+                this.score += 60;
+              } 
+              //score: 3 - 10points; 4 - 30points; 5 - 90points
               this.scoreNode.nodeValue = String(this.score);
-              if (k==2) timerPlus = 5;
-              if (k==3) timerPlus = 15;
+              if (r-l==2) timerPlus = 5;
+              if (r-l==3) timerPlus = 15;
               if (this.secondsLeft + timerPlus <= 100){
                 this.secondsLeft += timerPlus;
                 this.counter += timerPlus;
               }
           }
         }
-        //check horizontally
+        //check vertically
         if (this.gameObjects[i][j].typeID != -1 &&
-          this.gameObjects[i][j].typeID == this.gameObjects[i][j+1].typeID &&
-          this.gameObjects[i][j+1].typeID == this.gameObjects[i][j+2].typeID){
+          this.gameObjects[i][j-1].typeID == this.gameObjects[i][j].typeID &&
+          this.gameObjects[i][j].typeID  == this.gameObjects[i][j+1].typeID && 
+          this.gameObjects[i][j].isFalling == false && this.gameObjects[i][j-1].isFalling == false &&
+          this.gameObjects[i][j+1].isFalling == false){
 
-          var l = 2;
-          while (j+l!=13 && this.gameObjects[i][j+l].typeID == this.gameObjects[i][j+l+1].typeID){
-            l++;
+          var l = -1;
+          while (j+l!=1 && this.gameObjects[i][j+l].typeID == this.gameObjects[i][j+l-1].typeID){
+            l--;
           }
-          for(var n = 0; n <= l; n++) {  
-            this.gameObjects[i][j+n].typeID = -1;         
-            this.gameObjects[i][j+n].shrink();
-            this.gameObjects[i][j+n].move(50*dt);
-              
+          var r = 1;
+          while (j+r!=13 && this.gameObjects[i][j+r].typeID == this.gameObjects[i][j+r+1].typeID){
+            r++;
           }
-          if (this.startSwap){
-            this.score += 10 * Math.pow((l-1),2);
+          var finishShrinkV = false;
+          for(var n = l; n <= r; n++) {  
+            if (!finishShrinkV){
+              this.gameObjects[i][j+n].startShink = true;
+              if (this.gameObjects[i][j+n].scale.x == 0){
+                  for(var v = l; v <= r; v++) {
+                    this.gameObjects[i][j+v].scale.set(0,0,0); 
+                    this.gameObjects[i][j+v].startShink = false;
+                  }
+                  finishShrinkV = true;
+              } 
+            }
+          }       
+ 
+          
+
+          if (this.startSwap && finishShrinkV){
+              if (r-l == 2) {
+                this.score += 10;
+              } else if (r-l == 3){
+                this.score += 30;
+              } else {
+                this.score += 60;
+              } 
             this.scoreNode.nodeValue = String(this.score);
-            if (l==2) timerPlus = 5;
-            if (l==3) timerPlus = 15;
+            if (r-l==2) timerPlus = 5;
+            if (r-l==3) timerPlus = 15;
             if (this.secondsLeft + timerPlus <= 100){
               this.secondsLeft += timerPlus;
               this.counter += timerPlus;
             }
           }
-          
         }
-      }
+        }
     }
-}
+  }
+
 
 Scene.prototype.downShift = function() {
   var rotateAngle = this.camera.rotation % 6.2;
@@ -339,15 +409,20 @@ Scene.prototype.downShift = function() {
             if (this.gameObjects[i][j].typeID == -1){
               var k = 1;
               while (j+k <12 && this.gameObjects[i][j+k].typeID == -1){
+                // this.gameObjects[i][j+k].isFalling = true;
                 k++;
               }
               if (j+k < 12){
-                this.gameObjects[i][j+k].finalPosition = this.gameObjects[i][j].position;
                 this.gameObjects[i][j+k].fallYDown();
-                
+                this.gameObjects[i][j+k].isFalling = true;
+                // var n = k;
+                // while (j+n < 12){
+                //   this.gameObjects[i][j+n].isFalling = true;
+                //   n++;
+                // }
                 if (this.gameObjects[i][j+k].position.y <= this.gameObjects[i][j].position.y) 
                 {
-                  this.gameObjects[i][j+k].scale = new Vec3(0,0,0); 
+                  this.gameObjects[i][j+k].scale.set(0,0,0); 
                   this.gameObjects[i][j] = new GameObject(this.gameObjects[i][j+k].mesh);
                   this.gameObjects[i][j].typeID = this.gameObjects[i][j+k].typeID;
                   this.gameObjects[i][j+k].typeID = -1;
@@ -370,6 +445,7 @@ Scene.prototype.downShift = function() {
                   }
                   this.gameObjects[i][11] = new GameObject(randomMesh);
                   this.gameObjects[i][11].typeID = random;
+                  this.gameObjects[i][11].isFalling = true;
                 }
               }       
           }
@@ -386,12 +462,11 @@ Scene.prototype.downShift = function() {
                l++;
              }
              if (i-l > 1){
-                this.gameObjects[i-l][j].finalPosition = this.gameObjects[i][j].position;
                this.gameObjects[i-l][j].fallXUp();
                 
                if (this.gameObjects[i-l][j].position.x >= this.gameObjects[i][j].position.x) 
                 {
-                  this.gameObjects[i-l][j].scale = new Vec3(0,0,0); 
+                  this.gameObjects[i-l][j].scale.set(0,0,0); 
                   this.gameObjects[i][j] = new GameObject(this.gameObjects[i-l][j].mesh);
                   this.gameObjects[i][j].typeID = this.gameObjects[i-l][j].typeID;
                   this.gameObjects[i-l][j].typeID = -1;
@@ -429,12 +504,11 @@ Scene.prototype.downShift = function() {
                k++;
              }
              if (j-k > 1){
-                this.gameObjects[i][j-k].finalPosition = this.gameObjects[i][j].position;
                this.gameObjects[i][j-k].fallYUp();
                 
                if (this.gameObjects[i][j-k].position.y >= this.gameObjects[i][j].position.y) 
                 {
-                  this.gameObjects[i][j-k].scale = new Vec3(0,0,0); 
+                  this.gameObjects[i][j-k].scale.set(0,0,0); 
                   this.gameObjects[i][j] = new GameObject(this.gameObjects[i][j-k].mesh);
                   this.gameObjects[i][j].typeID = this.gameObjects[i][j-k].typeID;
                   this.gameObjects[i][j-k].typeID = -1;
@@ -473,12 +547,11 @@ Scene.prototype.downShift = function() {
                 l++;
               }
               if (i+l < 12){
-                this.gameObjects[i+l][j].finalPosition = this.gameObjects[i][j].position;
                 this.gameObjects[i+l][j].fallXDown();
                 
                 if (this.gameObjects[i+l][j].position.x <= this.gameObjects[i][j].position.x) 
                 {
-                  this.gameObjects[i+l][j].scale = new Vec3(0,0,0); 
+                  this.gameObjects[i+l][j].scale.set(0,0,0); 
                   this.gameObjects[i][j] = new GameObject(this.gameObjects[i+l][j].mesh);
                   this.gameObjects[i][j].typeID = this.gameObjects[i+l][j].typeID;
                   this.gameObjects[i+l][j].typeID = -1;

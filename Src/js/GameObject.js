@@ -5,13 +5,21 @@ let GameObject = function(mesh) {
   this.orientation = 0; 
   this.scale = new Vec3(0.45, 0.45, 1); 
   this.angularVelocity = 0;
+  this.rotateAxis = new Vec3(0,0,0);
   this.featherFall = new Vec3(0,0,0);
   this.modelMatrix = new Mat4(); 
+  this.startShrink = false;
+  this.isFalling = false;
   this.typeID;
 };
 
 GameObject.prototype.move = function(dt){
-  this.angularVelocity += 0.9*dt;
+  this.angularVelocity += 5*dt;
+}
+
+GameObject.prototype.diamondRotate = function(dt){
+  this.angularVelocity += 3*dt;
+  this.rotateAxis.set(0,1,0);
 }
 
 GameObject.prototype.fallYDown = function(){
@@ -34,11 +42,14 @@ GameObject.prototype.fallXUp = function(){
     this.featherFall.sub(0.05,0,0);
 }
 
-
 GameObject.prototype.shrink = function(){
-  if (this.scale.x > 0)
-    this.scale.sub(0.08,0.08,0);
+  if (this.scale.x <= 0.05){
+    this.scale.set(0,0,0);
+  } else {
+    this.scale.sub(0.05,0.05,0);
+  }
 }
+
 
 GameObject.prototype.updateModelMatrix = function(){ 
 // TODO: set the model matrix according to the 
@@ -46,7 +57,7 @@ GameObject.prototype.updateModelMatrix = function(){
   this.modelMatrix.set().
     scale(this.scale).
     translate(0,0,0).
-    rotate(this.angularVelocity).
+    rotate(this.angularVelocity, this.rotateAxis).
     rotate(this.orientation).
     translate(this.position);
 };

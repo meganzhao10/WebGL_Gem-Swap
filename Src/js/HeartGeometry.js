@@ -40,6 +40,18 @@ let HeartGeometry = function(gl) {
     ]),
     gl.STATIC_DRAW);
 
+
+  // vertex buffer
+  var vertexArray = [230/255,81/255,0/255];
+  for (var i = 0; i < 20; i++){
+    vertexArray.push(255/255,160/255,0/255);
+  }
+  this.colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array(vertexArray),
+    gl.STATIC_DRAW);
+
   // index buffer
   this.indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -67,7 +79,6 @@ let HeartGeometry = function(gl) {
       0, 20, 1,
     ]),
     gl.STATIC_DRAW);
-
 };
 
 HeartGeometry.prototype.draw = function() {
@@ -82,8 +93,15 @@ HeartGeometry.prototype.draw = function() {
     0 //< data starts at array start
   );
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-  gl.disableVertexAttribArray(1);
+    // set vertex buffer to pipeline input
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1,
+    3, gl.FLOAT, //< three pieces of float
+    false, //< do not normalize (make unit length)
+    0, //< tightly packed
+    0 //< data starts at array start
+  );
 
   // set index buffer to pipeline input
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);

@@ -42,9 +42,8 @@ car drive can explore them
 -Hint 
 -步数
 -有毒，惩罚
+-放大几倍加倍积分
 -when swipe doesnt work minus point or  a life loss
-
-
 
 
 fixed bug of when gem is draged out of bound

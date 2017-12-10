@@ -38,6 +38,14 @@ let Scene = function(gl) {
   this.heartMesh = new Mesh(this.heartGeometry,this.colorMaterial);
   this.heartPulsateMesh = new Mesh(this.heartGeometry,this.pulsateMaterial);
 
+  this.quadGeometry = new QuadGeometry(gl);
+  this.quadMaterial = new Material(gl, this.solidProgram);
+  this.quadMaterial.solidColor.set(0/255, 155/255, 214/255, .5);
+  this.quadMesh = new Mesh(this.quadGeometry,this.quadMaterial); 
+  this.quadBackground = new GameObject(this.quadMesh); 
+  this.quadBackground.position.set(5,5,0.2);
+  this.quadBackground.scale.set(0,0,0);
+
   this.camera = new OrthoCamera();
 
   this.gameObjects = [];
@@ -99,8 +107,10 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   this.pulsateMaterial.time.set(elapseTime);
 
   // clear the screen
-  gl.clearColor(223/255, 208/255, 159/255, 1.0);
+  gl.clearColor(0/255, 25/255, 25/255, 1.0);
   gl.clearDepth(1.0);
+  // gl.enable(gl.BLEND);
+   //gl.enable(gl.DEPTH_TEST);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   //timerBar
@@ -109,15 +119,17 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
       this.counter -= 1;
       this.timePrg.style.width = this.secondsLeft + '%';
       this.percent.innerHTML = this.counter + ' %';
+  } 
+  if (this.secondsLeft == 0 && this.counter == 0){
+    this.percent.innerHTML = "GAME OVER";
   }
-
 
   for(var i=0; i<14; i++){
     for(var j=0; j<14; j++){
       if(this.gameObjects[i][j].mesh == this.diamondMesh)
        	  this.gameObjects[i][j].diamondRotate(dt);
       if(this.gameObjects[i][j].mesh == this.starMesh2)
-          this.gameObjects[i][j].move(dt);
+          this.gameObjects[i][j].starRotate(dt);
       this.gameObjects[i][j].position = new Vec3(i-2, j-2, 0);
     };
   };
@@ -130,10 +142,8 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   //draw
 	for(var i=2; i<12; i++){
   	for(var j=2; j<12; j++){
-
       if (this.gameObjects[i][j].scale.x == 0)
         this.gameObjects[i][j].typeID = -1;
-    
 
       var emptyBelow = false;
       if (j==2) {
@@ -157,6 +167,7 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   		this.gameObjects[i][j].draw(this.camera);
 	 };
   };
+  //this.quadBackground.draw(this.camera);
 
 }
 
@@ -165,7 +176,7 @@ Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime
   if (keysPressed.Q){
     this.startSwap = true;
     if (this.numberOfFramesQuake < 150){
-      this.camera.position = new Vec2(4.5,4.5).
+      this.camera.position = new Vec2(4.5, 4.5).
       add(Math.sin(elapseTime*30)*0.1,Math.sin(elapseTime*30)*0.1); 
       this.camera.updateViewProjMatrix(); 
       this.numberOfFramesQuake++;
@@ -415,11 +426,6 @@ Scene.prototype.downShift = function() {
               if (j+k < 12){
                 this.gameObjects[i][j+k].fallYDown();
                 this.gameObjects[i][j+k].isFalling = true;
-                // var n = k;
-                // while (j+n < 12){
-                //   this.gameObjects[i][j+n].isFalling = true;
-                //   n++;
-                // }
                 if (this.gameObjects[i][j+k].position.y <= this.gameObjects[i][j].position.y) 
                 {
                   this.gameObjects[i][j+k].scale.set(0,0,0); 
@@ -463,7 +469,7 @@ Scene.prototype.downShift = function() {
              }
              if (i-l > 1){
                this.gameObjects[i-l][j].fallXUp();
-                
+               this.gameObjects[i-l][j].isFalling = true;
                if (this.gameObjects[i-l][j].position.x >= this.gameObjects[i][j].position.x) 
                 {
                   this.gameObjects[i-l][j].scale.set(0,0,0); 
@@ -489,6 +495,7 @@ Scene.prototype.downShift = function() {
                   }
                  this.gameObjects[2][j] = new GameObject(randomMesh);
                  this.gameObjects[2][j].typeID = random;
+                 this.gameObjects[2][j].isFalling = true;
                 }
              }       
           }
@@ -505,7 +512,7 @@ Scene.prototype.downShift = function() {
              }
              if (j-k > 1){
                this.gameObjects[i][j-k].fallYUp();
-                
+                this.gameObjects[i][j-k].isFalling = true;
                if (this.gameObjects[i][j-k].position.y >= this.gameObjects[i][j].position.y) 
                 {
                   this.gameObjects[i][j-k].scale.set(0,0,0); 
@@ -531,6 +538,7 @@ Scene.prototype.downShift = function() {
                   }
                  this.gameObjects[i][2] = new GameObject(randomMesh);
                  this.gameObjects[i][2].typeID = random;
+                 this.gameObjects[i][2].isFalling = true;
                 }
              }       
           }
@@ -548,7 +556,7 @@ Scene.prototype.downShift = function() {
               }
               if (i+l < 12){
                 this.gameObjects[i+l][j].fallXDown();
-                
+                this.gameObjects[i+l][j].isFalling = true;
                 if (this.gameObjects[i+l][j].position.x <= this.gameObjects[i][j].position.x) 
                 {
                   this.gameObjects[i+l][j].scale.set(0,0,0); 
@@ -574,6 +582,7 @@ Scene.prototype.downShift = function() {
                   }
                   this.gameObjects[11][j] = new GameObject(randomMesh);
                   this.gameObjects[11][j].typeID = random;
+                  this.gameObjects[11][j].isFalling = true;
                 }
               }
               

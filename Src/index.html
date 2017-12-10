@@ -28,18 +28,13 @@
 	<div id="container">
 	  <canvas id="canvas"></canvas>
 
-	  <div id="overlayProgress">
+	  <div id="overlay">
+	  		<div id="scoreSection">Score&nbsp;:&nbsp;<span id="score"></span></div>
 		  	<div id="percentCount">100 %</div>
 		  	<div class="progress-bar">
 		  			<div id="progress"></div>
 		  	</div>
-	  </div>
-
-	  <div id="overlay">
-		  	<div>Score: <span id="score"></span></div>
-	  </div>
-
-	  	
+	  </div>	
 	  
 	</div>
   
@@ -49,7 +44,9 @@
 		<script src="js/shaders/solid_fs.essl"></script>
 		<script src="js/shaders/change_fs.essl"></script>
 		<script src="js/shaders/color_fs.essl"></script>
+		<script src="js/shaders/transparency_fs.essl"></script>
 	<script src="js/Program.js"></script>
+	<script src="js/QuadGeometry.js"></script>
 	<script src="js/StarGeometry.js"></script>
 	<script src="js/StarGeometry2.js"></script>
 	<script src="js/HeartGeometry.js"></script>

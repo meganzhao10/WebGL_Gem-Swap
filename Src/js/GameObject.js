@@ -14,6 +14,10 @@ let GameObject = function(mesh) {
 };
 
 GameObject.prototype.move = function(dt){
+  this.angularVelocity += 11*dt;
+}
+
+GameObject.prototype.starRotate = function(dt){
   this.angularVelocity += 5*dt;
 }
 

@@ -6,15 +6,15 @@ let StarGeometry = function(gl) {
     return angle * (Math.PI / 180);
   }
 
-  var vertexArray = [0, 0, 0.5];
+  var vertexArray = [0, 0, 0];
   var degree = 18;
   for (var i = 0; i < 5; i++){
-    vertexArray.push(0.8*Math.cos(toRadins(degree)), 0.8*Math.sin(toRadins(degree)), 0.5,);
+    vertexArray.push(0.8*Math.cos(toRadins(degree)), 0.8*Math.sin(toRadins(degree)), 0,);
     degree += 36;
-    vertexArray.push(0.34*Math.cos(toRadins(degree)), 0.34*Math.sin(toRadins(degree)), 0.5,);
+    vertexArray.push(0.34*Math.cos(toRadins(degree)), 0.34*Math.sin(toRadins(degree)), 0,);
     degree += 36;
   }
-  vertexArray.push(0, 0, 0.5);
+  vertexArray.push(0, 0, 0);
 
   // vertex buffer
   this.vertexBuffer = gl.createBuffer();

@@ -47,10 +47,10 @@ GameObject.prototype.fallXUp = function(){
 }
 
 GameObject.prototype.shrink = function(){
-  if (this.scale.x <= 0.05){
+  if (this.scale.x <= 0.03){
     this.scale.set(0,0,0);
   } else {
-    this.scale.sub(0.05,0.05,0);
+    this.scale.sub(0.03,0.03,0);
   }
 }
 

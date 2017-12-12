@@ -26,14 +26,29 @@
 	
 <body>
 	<div id="container">
+
 	  <canvas id="canvas"></canvas>
 
+	  <div id="plusScore"></div>
+
 	  <div id="overlay">
-	  		<div id="scoreSection">Score&nbsp;:&nbsp;<span id="score"></span></div>
+	  		<!-- score -->
+  			<div id="scoreSection">Score&nbsp;:&nbsp;<span id="score"></span>/500</div>
+	  		<!-- progress bar -->
 		  	<div id="percentCount">100 %</div>
+		  	<div id="plusTime"></div>
 		  	<div class="progress-bar">
 		  			<div id="progress"></div>
 		  	</div>
+		  	<!-- level bar -->
+		  	<div class="levelbar">
+		  		<li class="active1">level 1</li>
+		  		<li class="active2">level 2</li>
+		  		<li class="active3">level 3</li>
+		  	</div>
+		  	
+		  	<!-- steps for level 2 -->
+
 	  </div>	
 	  
 	</div>
@@ -44,7 +59,6 @@
 		<script src="js/shaders/solid_fs.essl"></script>
 		<script src="js/shaders/change_fs.essl"></script>
 		<script src="js/shaders/color_fs.essl"></script>
-		<script src="js/shaders/transparency_fs.essl"></script>
 	<script src="js/Program.js"></script>
 	<script src="js/QuadGeometry.js"></script>
 	<script src="js/StarGeometry.js"></script>

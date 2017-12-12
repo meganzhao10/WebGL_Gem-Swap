@@ -86,6 +86,10 @@ let Scene = function(gl) {
   this.scoreNode = document.createTextNode(String(this.score));
   this.scoreElement.appendChild(this.scoreNode); 
 
+  this.plusScoreOpacity = 1;
+  this.plusScore = 0;
+  this.plusScoreElement = document.getElementById("plusScore");
+
   this.secondsLeft = 100;
   this.counter = 100;
   this.timePrg = document.getElementById('progress');
@@ -93,14 +97,14 @@ let Scene = function(gl) {
   this.secondsInterval = 0;
 
   this.startSwap = false;
-
+  this.gameOver = false;
 };
 
 Scene.prototype.update = function(gl, keysPressed, mouse) {  
   let elapseTime = (new Date().getTime() - this.beginningTime)/500;
   let timeAtThisFrame = new Date().getTime();
   let dt = (timeAtThisFrame - this.timeAtLastFrame) / 1000.0;
-  if (this.secondsInterval == 10) this.secondsInterval = -1;
+  if (this.secondsInterval == 5) this.secondsInterval = -1;
   this.secondsInterval++;
 
   this.timeAtLastFrame = timeAtThisFrame;
@@ -114,15 +118,34 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   //timerBar
-  if (this.secondsInterval == 0 && this.secondsLeft > 0 && this.counter > 0){
+  if (this.secondsInterval == 0 && this.secondsLeft > 0 && this.counter > 0 
+    && this.startSwap == true && this.gameOver == false){
       this.secondsLeft -= 1;
       this.counter -= 1;
       this.timePrg.style.width = this.secondsLeft + '%';
       this.percent.innerHTML = this.counter + ' %';
   } 
+  //lose
   if (this.secondsLeft == 0 && this.counter == 0){
     this.percent.innerHTML = "GAME OVER";
+    this.gameOver = true;
   }
+  //win
+  if (this.score >= 5 && this.gameOver == false){
+    this.percent.innerHTML = "YOU WIN!";
+    this.gameOver = true;
+    document.styleSheets[0].addRule('.levelbar li.active2','color: green');
+    document.styleSheets[0].addRule('.levelbar li.active2:before','border-color: green');
+    document.styleSheets[0].addRule('.levelbar li.active2 + li:after','background-color: green');
+  }
+  if (this.plusScore != 0 && this.gameOver == false){
+    this.plusScoreElement.innerHTML = "  + " + this.plusScore;
+  } else {
+    this.plusScoreElement.innerHTML = "";
+    this.plusScoreOpacity = 1;
+  }
+  this.plusScoreElement.style.opacity = this.plusScoreOpacity;
+
 
   for(var i=0; i<14; i++){
     for(var j=0; j<14; j++){
@@ -138,6 +161,8 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   this.mouseSwap(dt, mouse, keysPressed);
   this.checkThreeInALine(dt);
   this.downShift();
+
+
 
   //draw
 	for(var i=2; i<12; i++){
@@ -159,7 +184,6 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
       }else{
         this.gameObjects[i][j].isFalling = true;
       }
-
       if (this.gameObjects[i][j].startShink == true) {
           this.gameObjects[i][j].shrink();
           this.gameObjects[i][j].move(50*dt);
@@ -215,98 +239,102 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
   var xUp = Math.floor(mouse.Up.x + 2.5);
   var yUp = Math.floor(mouse.Up.y + 2.5);
 
-  if (mouse.pressedDown){
-  this.idDown = this.gameObjects[xDown][yDown].typeID;
-  //Bomb
-  if(keysPressed.B){
-    this.gameObjects[xDown][yDown].scale.set(0,0,0);
+  //check if click inside game field
+  if (xDown > 1 && xDown < 12 && yDown > 1 && yDown < 12 && 
+    xUp > 1 && xUp < 12 && yUp > 1 && yUp < 12){
+
+      if (mouse.pressedDown){
+      this.idDown = this.gameObjects[xDown][yDown].typeID;
+      //Bomb
+      if(keysPressed.B){
+        this.gameObjects[xDown][yDown].scale.set(0,0,0);
+        }
+      }
+
+      //Sticky
+      if (mouse.pressedMove){
+        this.gameObjects[xDown][yDown].position = new Vec3(xMove, yMove, 0);
+      }
+
+      if (mouse.pressedUp){
+        this.idUp = this.gameObjects[xUp][yUp].typeID;
+        var highX;
+        var highY;
+        if (xDown-xUp == 1)
+          highX = xDown;
+        else if (xDown-xUp == -1)
+          highX = xUp;
+        else if (yDown-yUp == 1)
+          highY = yDown;
+        else if (yDown-yUp == -1)
+          highY = yUp;
+        var itemsInLine = false;
+
+        //Legal: check if form 3 items on one line
+          //when switch vertically
+          if (Math.abs(xDown-xUp) == 1 && Math.abs(yDown-yUp) == 0 &&
+            (this.gameObjects[highX][yUp].typeID == this.gameObjects[highX-2][yUp].typeID && 
+            this.gameObjects[highX][yUp].typeID == this.gameObjects[highX-3][yUp].typeID ||
+            this.gameObjects[highX-1][yUp].typeID == this.gameObjects[highX+2][yUp].typeID && 
+            this.gameObjects[highX-1][yUp].typeID == this.gameObjects[highX+1][yUp].typeID ||
+
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp+1].typeID && 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp-1].typeID || 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp+1].typeID && 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp+2].typeID || 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp-1].typeID && 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp-2].typeID || 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown+1].typeID && 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown-1].typeID ||
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown+1].typeID && 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown+2].typeID ||
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown-1].typeID && 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown-2].typeID))
+              itemsInLine = true;
+          //when switch horizontaly
+          else if (Math.abs(xDown-xUp) == 0 && Math.abs(yDown-yUp) == 1 &&
+            (this.gameObjects[xDown][highY].typeID == this.gameObjects[xDown][highY-2].typeID && 
+            this.gameObjects[xDown][highY].typeID == this.gameObjects[xDown][highY-3].typeID ||
+            this.gameObjects[xDown][highY-1].typeID == this.gameObjects[xDown][highY+2].typeID && 
+            this.gameObjects[xDown][highY-1].typeID == this.gameObjects[xDown][highY+1].typeID ||
+
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp+1][yUp].typeID && 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp-1][yUp].typeID || 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp+1][yUp].typeID && 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp+2][yUp].typeID ||
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp-1][yUp].typeID && 
+            this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp-2][yUp].typeID || 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown+1][yDown].typeID && 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown-1][yDown].typeID || 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown+1][yDown].typeID && 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown+2][yDown].typeID || 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown-1][yDown].typeID && 
+            this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown-2][yDown].typeID))
+              itemsInLine = true;
+        
+
+        //swap two game objects
+        if (itemsInLine){
+          var mesh = this.gameObjects[xUp][yUp].mesh;
+          var id = this.gameObjects[xUp][yUp].typeID;
+          this.gameObjects[xUp][yUp] = new GameObject(this.gameObjects[xDown][yDown].mesh);
+          this.gameObjects[xUp][yUp].typeID = this.gameObjects[xDown][yDown].typeID;
+          this.gameObjects[xDown][yDown] = new GameObject(mesh);
+          this.gameObjects[xDown][yDown].typeID = id;
+          this.startSwap = true;
+        }
+
+        mouse.pressedDown = false;
+        mouse.pressedUp = false; 
+      }
     }
-  }
-
-  //Sticky
-  if (mouse.pressedMove){
-    this.gameObjects[xDown][yDown].position = new Vec3(xMove, yMove, 0);
-  }
-
-  if (mouse.pressedUp){
-    this.idUp = this.gameObjects[xUp][yUp].typeID;
-    var highX;
-    var highY;
-    if (xDown-xUp == 1)
-      highX = xDown;
-    else if (xDown-xUp == -1)
-      highX = xUp;
-    else if (yDown-yUp == 1)
-      highY = yDown;
-    else if (yDown-yUp == -1)
-      highY = yUp;
-    var itemsInLine = false;
-
-    //Legal: check if click inside game field and if form 3 items on one line
-    if (this.idUp != -1 && this.idDown != -1 &&
-      xDown > 1 && xDown < 12 && yDown > 1 && yDown < 12 && xUp > 1 && xUp < 12 && yUp > 1 && yUp < 12){
-      //when switch vertically
-      if (Math.abs(xDown-xUp) == 1 && Math.abs(yDown-yUp) == 0 &&
-        (this.gameObjects[highX][yUp].typeID == this.gameObjects[highX-2][yUp].typeID && 
-        this.gameObjects[highX][yUp].typeID == this.gameObjects[highX-3][yUp].typeID ||
-        this.gameObjects[highX-1][yUp].typeID == this.gameObjects[highX+2][yUp].typeID && 
-        this.gameObjects[highX-1][yUp].typeID == this.gameObjects[highX+1][yUp].typeID ||
-
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp+1].typeID && 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp-1].typeID || 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp+1].typeID && 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp+2].typeID || 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp-1].typeID && 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp][yUp-2].typeID || 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown+1].typeID && 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown-1].typeID ||
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown+1].typeID && 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown+2].typeID ||
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown-1].typeID && 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown][yDown-2].typeID))
-          itemsInLine = true;
-      //when switch horizontaly
-      else if (Math.abs(xDown-xUp) == 0 && Math.abs(yDown-yUp) == 1 &&
-        (this.gameObjects[xDown][highY].typeID == this.gameObjects[xDown][highY-2].typeID && 
-        this.gameObjects[xDown][highY].typeID == this.gameObjects[xDown][highY-3].typeID ||
-        this.gameObjects[xDown][highY-1].typeID == this.gameObjects[xDown][highY+2].typeID && 
-        this.gameObjects[xDown][highY-1].typeID == this.gameObjects[xDown][highY+1].typeID ||
-
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp+1][yUp].typeID && 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp-1][yUp].typeID || 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp+1][yUp].typeID && 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp+2][yUp].typeID ||
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp-1][yUp].typeID && 
-        this.gameObjects[xDown][yDown].typeID == this.gameObjects[xUp-2][yUp].typeID || 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown+1][yDown].typeID && 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown-1][yDown].typeID || 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown+1][yDown].typeID && 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown+2][yDown].typeID || 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown-1][yDown].typeID && 
-        this.gameObjects[xUp][yUp].typeID == this.gameObjects[xDown-2][yDown].typeID))
-          itemsInLine = true;
-    }
-
-    //swap two game objects
-    if (itemsInLine){
-      var mesh = this.gameObjects[xUp][yUp].mesh;
-      var id = this.gameObjects[xUp][yUp].typeID;
-      this.gameObjects[xUp][yUp] = new GameObject(this.gameObjects[xDown][yDown].mesh);
-      this.gameObjects[xUp][yUp].typeID = this.gameObjects[xDown][yDown].typeID;
-      this.gameObjects[xDown][yDown] = new GameObject(mesh);
-      this.gameObjects[xDown][yDown].typeID = id;
-      this.startSwap = true;
-    }
-
-    mouse.pressedDown = false;
-    mouse.pressedUp = false; 
-  }
 
 }
 
 Scene.prototype.checkThreeInALine = function(dt){
     //Three-in-a-line
     var timerPlus = 20;
+    this.plusScore = 0;
     for(var i=2; i<13; i++) {
       for(var j=2; j<13; j++) {
 
@@ -339,21 +367,38 @@ Scene.prototype.checkThreeInALine = function(dt){
             }
           }
 
-          if (this.startSwap && finishShrink){
+          if (this.gameOver == false && this.startSwap){
+             if (r-l == 2) {
+              this.plusScore = 10;
+             } else if (r-l == 3){
+                this.plusScore = 20;
+              } else {
+                this.plusScore = 50;
+              } 
+              this.plusScoreOpacity -= 0.05;
+          }
+
+          if (this.gameOver == false && this.startSwap && finishShrink){
               if (r-l == 2) {
                 this.score += 10;
               } else if (r-l == 3){
-                this.score += 30;
+                this.score += 20;
               } else {
-                this.score += 60;
+                this.score += 50;
               } 
               //score: 3 - 10points; 4 - 30points; 5 - 90points
               this.scoreNode.nodeValue = String(this.score);
-              if (r-l==2) timerPlus = 5;
-              if (r-l==3) timerPlus = 15;
+              if (r-l==2) {
+                timerPlus = 10;
+              } else {
+                timerPlus = 20;
+              }
               if (this.secondsLeft + timerPlus <= 100){
                 this.secondsLeft += timerPlus;
                 this.counter += timerPlus;
+              } else {
+                this.secondsLeft = 100;
+                this.counter = 100;
               }
           }
         }
@@ -385,25 +430,42 @@ Scene.prototype.checkThreeInALine = function(dt){
               } 
             }
           }       
- 
-          
 
-          if (this.startSwap && finishShrinkV){
+          if (this.gameOver == false && this.startSwap){
+             if (r-l == 2) {
+              this.plusScore = 10;
+             } else if (r-l == 3){
+                this.plusScore = 20;
+              } else {
+                this.plusScore = 50;
+              } 
+              this.plusScoreOpacity -= 0.05;
+          }
+ 
+           if (this.gameOver == false && this.startSwap && finishShrinkV){
               if (r-l == 2) {
                 this.score += 10;
               } else if (r-l == 3){
-                this.score += 30;
+                this.score += 20;
               } else {
-                this.score += 60;
+                this.score += 50;
               } 
-            this.scoreNode.nodeValue = String(this.score);
-            if (r-l==2) timerPlus = 5;
-            if (r-l==3) timerPlus = 15;
-            if (this.secondsLeft + timerPlus <= 100){
-              this.secondsLeft += timerPlus;
-              this.counter += timerPlus;
-            }
+              //score: 3 - 10points; 4 - 30points; 5 - 90points
+              this.scoreNode.nodeValue = String(this.score);
+              if (r-l==2) {
+                timerPlus = 10;
+              } else {
+                timerPlus = 20;
+              } 
+              if (this.secondsLeft + timerPlus <= 100){
+                this.secondsLeft += timerPlus;
+                this.counter += timerPlus;
+              } else {
+                this.secondsLeft = 100;
+                this.counter = 100;
+              }
           }
+
         }
         }
     }

@@ -30,6 +30,7 @@ When chains are formed, gems disappear and gems above them fall in their places.
 
 * Stretch goal: Add a user-controlled avatar (e.g. spaceship, Mario, side-view car, top-view car).  Use physics (forces, torques, acceleration, velocity, drag, etc.) to simulate the motion of objects. Use collision detection and response to make them interact plausibly. Make the 2D camera follow the avatar. Display a minimap. Show the number of lives remaining, or pickups gathered. Shoot projectiles. Display explosions. Display animated characters. Use particle systems to render exhaust plasma/smoke/fire. Display objects with rotating parts (wheel, rotor, turret, etc.). Move enemies with simple AI (visit checkpoints, chase down avatar, etc.)
 
+
 * Potential Features: 
 minimap with light;
 put bomb somewhere by drag and drop once certain points; change shapes; 3d; level; automatically rotate in half way instead of key control;
@@ -45,8 +46,6 @@ car drive can explore them
 -放大几倍加倍积分
 -when swipe doesnt work minus point or  a life loss
 
-
-fixed bug of when gem is draged out of bound
 
 Levels:
 -shape of the grid changes;

@@ -4,6 +4,6 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	uniform vec4 solidColor;
 
 	void main(void) {
-		gl_FragColor = vec4(color,1);
+		gl_FragColor = vec4(color,0.3);
 	}
 `;

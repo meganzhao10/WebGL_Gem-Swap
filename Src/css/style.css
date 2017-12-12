@@ -3,24 +3,22 @@
 	padding: 0;
 }
 
+body{
+	background-image: url("http://jllsly.com/wallpapers/black-wallpaper-desktop-Is-Cool-Wallpapers.jpg");
+}
+
 #container {
     position: absolute;
-	width: 20%;
+	width: 100%;
 	height: 100%;
 	top: 0;
 	left: 0;
 	bottom: 0;
 	right: 0;
     overflow: hidden;
+    background-image: url("http://jllsly.com/wallpapers/black-wallpaper-desktop-Is-Cool-Wallpapers.jpg");
 }
 
-#overlay{
-	position: absolute;
-    width: 25%;
-    right: 0%;
-    top: 10%;
-    z-index: 20;
-}
 
 #scoreSection{
 	text-align: center;	
@@ -38,9 +36,37 @@
     opacity: 1;
 }
 
+#overlay{
+	position: absolute;
+    width: 25%;
+    right: 0%;
+    top: 10%;
+    z-index: 20;
+}
+
+.button {
+	position: absolute;
+    right: 35%;
+    margin-top: 100px;
+    width: 110px; /* width of button */
+    height: 50px; /* height of button */
+    border-radius: 10px;
+    font-size: 15px;
+    background-color: green;
+    border-color: green;
+    color: #fff;
+    opacity: 0.85;
+}
+.button:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: green;
+}
+.button:focus {outline:0;}
+
 #percentCount {
-	height: 38px;
-	color: #fff;
+	height: 40px;
+	color: #bbb;
     font-size:25px;
     text-align: center;
 }
@@ -64,9 +90,9 @@
 
 .levelbar{
 	width: 100%
-	padding-top: 80px;
-	 margin-top: 80px;
-	 counter-reset: level;
+	padding-top: 65px;
+	margin-top: 65px;
+	counter-reset: level;
 }
 .levelbar li{
 	color: #bbb;
@@ -93,7 +119,7 @@
 	content: "";
 	position: absolute;
 	width: 100%;
-	height: 1px;
+	height: 3px;
 	background-color: #ddd;
 	top: 15px;
 	left: -50%;
@@ -107,11 +133,19 @@
 }
 .levelbar li.active1:before{
 	border-color: green;
+	border-width: 2px;
 }
 .levelbar li.active1 + li:after {
 	background-color: green;
 }
 
+#swapsSection{
+	font-size:25px;
+	color: green;
+	text-align: center;
+	padding-top:  45px;
+	display: none;
+}
 
 #canvas {
     position: absolute;
@@ -122,6 +156,6 @@
 	bottom: 0;
 	right: 0;
     z-index: 10;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 

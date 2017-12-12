@@ -17,14 +17,14 @@ let Scene = function(gl) {
   this.beginningTime = new Date().getTime();
   this.timeAtLastFrame = new Date().getTime();
 
-  this.blueMaterial = new Material(gl, this.solidProgram);
-  this.blueMaterial.solidColor.set(19/255, 155/255, 214/255);
-  this.greenMaterial = new Material(gl, this.solidProgram);
-  this.greenMaterial.solidColor.set(9/255, 165/255,119/255);
-  this.orangeMaterial = new Material(gl, this.solidProgram);
-  this.orangeMaterial.solidColor.set(224/255, 123/255, 0/255);
-  this.purpleMaterial = new Material(gl, this.solidProgram);
-  this.purpleMaterial.solidColor.set(47/255, 54/255, 132/255);
+  // this.blueMaterial = new Material(gl, this.solidProgram);
+  // this.blueMaterial.solidColor.set(19/255, 155/255, 214/255, 0.3);
+  // this.greenMaterial = new Material(gl, this.solidProgram);
+  // this.greenMaterial.solidColor.set(9/255, 165/255,119/255, 0.3);
+  // this.orangeMaterial = new Material(gl, this.solidProgram);
+  // this.orangeMaterial.solidColor.set(224/255, 123/255, 0/255, 0.3);
+  // this.purpleMaterial = new Material(gl, this.solidProgram);
+  // this.purpleMaterial.solidColor.set(47/255, 54/255, 132/255, 0.3);
   
   this.colorMaterial = new Material(gl,this.colorProgram);
 
@@ -37,14 +37,6 @@ let Scene = function(gl) {
   this.diamondMesh = new Mesh(this.diamondGeometry,this.colorMaterial);
   this.heartMesh = new Mesh(this.heartGeometry,this.colorMaterial);
   this.heartPulsateMesh = new Mesh(this.heartGeometry,this.pulsateMaterial);
-
-  this.quadGeometry = new QuadGeometry(gl);
-  this.quadMaterial = new Material(gl, this.solidProgram);
-  this.quadMaterial.solidColor.set(0/255, 155/255, 214/255, .5);
-  this.quadMesh = new Mesh(this.quadGeometry,this.quadMaterial); 
-  this.quadBackground = new GameObject(this.quadMesh); 
-  this.quadBackground.position.set(5,5,0.2);
-  this.quadBackground.scale.set(0,0,0);
 
   this.camera = new OrthoCamera();
 
@@ -82,9 +74,9 @@ let Scene = function(gl) {
   };
 
   this.score = 0;
-  this.scoreElement = document.getElementById("score");
+  var scoreElement = document.getElementById("score");
   this.scoreNode = document.createTextNode(String(this.score));
-  this.scoreElement.appendChild(this.scoreNode); 
+  scoreElement.appendChild(this.scoreNode); 
 
   this.plusScoreOpacity = 1;
   this.plusScore = 0;
@@ -95,6 +87,19 @@ let Scene = function(gl) {
   this.timePrg = document.getElementById('progress');
   this.percent = document.getElementById('percentCount');
   this.secondsInterval = 0;
+
+  //level2 swap
+  this.swaps = 15;
+  this.swapsSection = document.getElementById("swapsSection");
+  var swapsElement = document.getElementById("swaps");
+  this.swapsNode = document.createTextNode(String(this.swaps));
+  swapsElement.appendChild(this.swapsNode); 
+  this.level1 = true;
+  this.level2 = false;
+  this.level3 = false;
+
+  this.cameraRotateAngle = 0.007;
+  
 
   this.startSwap = false;
   this.gameOver = false;
@@ -111,7 +116,7 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   this.pulsateMaterial.time.set(elapseTime);
 
   // clear the screen
-  gl.clearColor(0/255, 25/255, 25/255, 1.0);
+  // gl.clearColor(0/255, 25/255, 25/255, 1.0);
   gl.clearDepth(1.0);
   // gl.enable(gl.BLEND);
    //gl.enable(gl.DEPTH_TEST);
@@ -126,18 +131,67 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
       this.percent.innerHTML = this.counter + ' %';
   } 
   //lose
-  if (this.secondsLeft == 0 && this.counter == 0){
+  if (this.secondsLeft == 0 && this.counter == 0 || this.swaps == 0 && (this.level2 == true || this.level3 == true)){
     this.percent.innerHTML = "GAME OVER";
     this.gameOver = true;
+    this.percent.style.color = "green";
+    this.percent.style.fontWeight = "900";
   }
   //win
-  if (this.score >= 5 && this.gameOver == false){
+  if (this.score >= 300 && this.gameOver == false){
+    let scene = this;
     this.percent.innerHTML = "YOU WIN!";
+    this.percent.style.color = "green";
+    this.percent.style.fontWeight = "900";
     this.gameOver = true;
-    document.styleSheets[0].addRule('.levelbar li.active2','color: green');
-    document.styleSheets[0].addRule('.levelbar li.active2:before','border-color: green');
-    document.styleSheets[0].addRule('.levelbar li.active2 + li:after','background-color: green');
+    var button = document.createElement("button");
+    if (this.level2 == false){
+      button.innerHTML = "Start  level 2";
+    } else {
+      button.innerHTML = "Start  level 3";
+    }
+    button.className = "button";
+    var overlay = document.getElementById("overlay");
+    overlay.appendChild(button);
+    button.addEventListener("click", function(){  
+        if (scene.level1 == true) {
+          scene.level1 = false;
+          scene.level2 = true;
+          document.styleSheets[0].addRule('.levelbar li.active2','color: green');
+          document.styleSheets[0].addRule('.levelbar li.active2:before','border-color: green');
+          document.styleSheets[0].addRule('.levelbar li.active2:before','border-width: 2px;');
+          document.styleSheets[0].addRule('.levelbar li.active2 + li:after','background-color: green');
+          scene.swaps = 15;
+        } else {
+          scene.level2 = false;
+          scene.level3 = true;
+          document.styleSheets[0].addRule('.levelbar li.active3','color: green');
+          document.styleSheets[0].addRule('.levelbar li.active3:before','border-width: 2px;');
+          document.styleSheets[0].addRule('.levelbar li.active3:before','border-color: green');
+          scene.swaps = 20;
+        }
+           
+        
+        button.style.display = "none";
+        scene.swapsSection.style.display = "block";
+        scene.gameOver = false;
+        scene.counter = 100;
+        scene.secondsLeft = 100;
+        scene.score = 0;
+        scene.scoreNode.nodeValue = String(scene.score);
+        scene.swapsNode.nodeValue = String(scene.swaps);
+    });
   }
+
+
+  if (this.level3){
+    this.camera.rotation += this.cameraRotateAngle;
+    this.camera.updateViewProjMatrix(); 
+    if (this.secondsInterval == 0 && Math.random() < 0.01){
+      this.cameraRotateAngle *= -1;
+    } 
+  }
+
   if (this.plusScore != 0 && this.gameOver == false){
     this.plusScoreElement.innerHTML = "  + " + this.plusScore;
   } else {
@@ -161,8 +215,6 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   this.mouseSwap(dt, mouse, keysPressed);
   this.checkThreeInALine(dt);
   this.downShift();
-
-
 
   //draw
 	for(var i=2; i<12; i++){
@@ -191,9 +243,11 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
   		this.gameObjects[i][j].draw(this.camera);
 	 };
   };
-  //this.quadBackground.draw(this.camera);
-
 }
+
+  // function buttonOnClicked(){
+
+  // }
 
 Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime) {
   //Quake
@@ -257,6 +311,12 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
       }
 
       if (mouse.pressedUp){
+        if (this.level2 == true){
+          this.swaps--;
+          if (this.swaps < 0) this.swaps = 0;
+          this.swapsNode.nodeValue = String(this.swaps);
+        }
+
         this.idUp = this.gameObjects[xUp][yUp].typeID;
         var highX;
         var highY;
@@ -482,7 +542,6 @@ Scene.prototype.downShift = function() {
             if (this.gameObjects[i][j].typeID == -1){
               var k = 1;
               while (j+k <12 && this.gameObjects[i][j+k].typeID == -1){
-                // this.gameObjects[i][j+k].isFalling = true;
                 k++;
               }
               if (j+k < 12){

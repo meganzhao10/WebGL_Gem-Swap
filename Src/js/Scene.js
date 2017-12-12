@@ -98,8 +98,7 @@ let Scene = function(gl) {
   this.level2 = false;
   this.level3 = false;
 
-  this.cameraRotateAngle = 0.007;
-  
+  this.cameraRotateAngle = 0.005;
 
   this.startSwap = false;
   this.gameOver = false;
@@ -138,17 +137,19 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
     this.percent.style.fontWeight = "900";
   }
   //win
-  if (this.score >= 300 && this.gameOver == false){
+  if (this.score >= 30 && this.gameOver == false){
     let scene = this;
     this.percent.innerHTML = "YOU WIN!";
     this.percent.style.color = "green";
     this.percent.style.fontWeight = "900";
     this.gameOver = true;
     var button = document.createElement("button");
-    if (this.level2 == false){
+    if (this.level2 == false && this.level3 == false){
       button.innerHTML = "Start  level 2";
-    } else {
+    } else if (this.level3 == false){
       button.innerHTML = "Start  level 3";
+    } else{
+      button.innerHTML = "Play again";
     }
     button.className = "button";
     var overlay = document.getElementById("overlay");
@@ -171,7 +172,6 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
           scene.swaps = 20;
         }
            
-        
         button.style.display = "none";
         scene.swapsSection.style.display = "block";
         scene.gameOver = false;
@@ -182,7 +182,6 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
         scene.swapsNode.nodeValue = String(scene.swaps);
     });
   }
-
 
   if (this.level3){
     this.camera.rotation += this.cameraRotateAngle;
@@ -244,10 +243,6 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
 	 };
   };
 }
-
-  // function buttonOnClicked(){
-
-  // }
 
 Scene.prototype.keyPressedFeatures = function(dt, mouse, keysPressed, elapseTime) {
   //Quake
@@ -311,11 +306,11 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
       }
 
       if (mouse.pressedUp){
-        if (this.level2 == true){
+        if (this.level2 == true || this.level3 == true){
           this.swaps--;
           if (this.swaps < 0) this.swaps = 0;
           this.swapsNode.nodeValue = String(this.swaps);
-        }
+        } 
 
         this.idUp = this.gameObjects[xUp][yUp].typeID;
         var highX;

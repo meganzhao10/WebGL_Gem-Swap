@@ -1,7 +1,7 @@
 "use strict"; 
 let GameObject = function(mesh) { 
   this.mesh = mesh;
-  this.position = new Vec3(-5, -5, 0); 
+  this.position = new Vec3(-55, -55, 0); 
   this.orientation = 0; 
   this.scale = new Vec3(0.45, 0.45, 1); 
   this.angularVelocity = 0;

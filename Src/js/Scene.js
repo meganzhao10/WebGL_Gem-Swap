@@ -137,7 +137,7 @@ Scene.prototype.update = function(gl, keysPressed, mouse) {
     this.percent.style.fontWeight = "900";
   }
   //win
-  if (this.score >= 30 && this.gameOver == false){
+  if (this.score >= 500 && this.gameOver == false){
     let scene = this;
     this.percent.innerHTML = "YOU WIN!";
     this.percent.style.color = "green";
@@ -306,7 +306,7 @@ Scene.prototype.mouseSwap = function(dt, mouse, keysPressed){
       }
 
       if (mouse.pressedUp){
-        if (this.level2 == true || this.level3 == true){
+        if (this.level2 == true || this.level3 == true && this.gameOver==false){
           this.swaps--;
           if (this.swaps < 0) this.swaps = 0;
           this.swapsNode.nodeValue = String(this.swaps);
@@ -441,7 +441,7 @@ Scene.prototype.checkThreeInALine = function(dt){
               } else {
                 this.score += 50;
               } 
-              //score: 3 - 10points; 4 - 30points; 5 - 90points
+              //score: 3 - 10points; 4 - 20points; 5 - 50points
               this.scoreNode.nodeValue = String(this.score);
               if (r-l==2) {
                 timerPlus = 10;

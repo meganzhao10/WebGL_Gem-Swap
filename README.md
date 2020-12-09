@@ -7,7 +7,7 @@ A 2D web game inspired by *Bejeweled* with three game levels and additional feat
 $ git clone https://github.com/meganzhao10/WebGL_Gem-Swap.git
 
 # Go into the repository
-$ cd Gem-Swap
+$ cd WebGL_Gem-Swap
 
 # Go into the source folder
 $ cd Src

@@ -15,7 +15,6 @@ $ cd Src
 # Open the URL of the game
 $ open index.html
 ```
-Link to the website hosted by github: https://meganzhao.github.io
 
 ## How To Play
 Mouse click a cell and release over a neighboring cell to form a horizontal or vertical chain of 3 or more gems of the same shape and color. When chains are formed, gems disappear and gems above them fall in their places. Random gems fall in to places in the upmost rows. 

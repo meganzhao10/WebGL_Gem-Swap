@@ -4,7 +4,7 @@ A 2D web game inspired by *Bejeweled* with three game levels and additional feat
 ## How To Run
 ```
 # Clone this repository
-$ git clone https://github.com/meganzhao/Gem-Swap.git
+$ git clone https://github.com/meganzhao10/Gem-Swap.git
 
 # Go into the repository
 $ cd Gem-Swap
